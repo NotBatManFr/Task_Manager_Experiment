@@ -1,0 +1,4 @@
+# DockerIgnore
+./tests/
+./venv/
+/app/__pycache__/

@@ -1,1 +1,5 @@
 # add the files to untrack
+.next
+node_modules
+.env
+__pycache__

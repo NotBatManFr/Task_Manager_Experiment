@@ -10,8 +10,8 @@ from sqlalchemy.exc import OperationalError
 # SQL_ALCHEMY_DATABASE_URL = f"sqlite:///{DB_PATH}"
 # engine = create_engine(SQL_ALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 
-DEFAULT_DB_URL = 'postgresql+psycopg://user:password@db:5432/task_db'
-SQL_ALCHEMY_DB_URL = os.getenv('DATABASE_URL', DEFAULT_DB_URL)
+# DEFAULT_DB_URL = 'postgresql+psycopg://user:password@db:5432/task_db'
+SQL_ALCHEMY_DB_URL = os.getenv('DATABASE_URL')
 
 engine = None
 for i in range(5):

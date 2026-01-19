@@ -2,7 +2,8 @@
 
 import {revalidatePath} from 'next/cache'
 
-const API_URL = 'http://backend:8000/tasks'
+const API_URL = `${process.env.API_URL}/tasks`
+// 'http://backend:8000/tasks'
 
 export async function addTaskAction(formData: FormData) {
     const title = formData.get('title') as string

@@ -1,7 +1,9 @@
 import TaskContainer from '@/components/TaskContainer';
 
+const API_URL = `${process.env.API_URL}/tasks`
+
 export default async function Page() {
-  const res = await fetch('http://backend:8000/tasks', { cache: 'no-store' });
+  const res = await fetch(API_URL, { cache: 'no-store' });
   const tasks = await res.json();
 
   return (
