@@ -12,7 +12,7 @@ export function SubmitButton() {
       whileTap={{ scale: 0.95 }}
       disabled={pending}
       type="submit"
-      className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium disabled:bg-indigo-300 transition-colors"
+      className="bg-lime-600 text-white px-6 py-2 rounded-lg font-medium disabled:bg-lime-300 transition-colors"
     >
       {pending ? 'Adding...' : 'Add Task'}
     </motion.button>
