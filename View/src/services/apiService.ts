@@ -21,5 +21,11 @@ export const apiService = {
     });
     return res.json();
   },
-  // ... deleteTask, updateStatus
+  deleteTask: async (id: string | number) => {
+    const res = await fetch(`${API_URL}/tasks/${id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) throw new Error('Failed to delete task');
+    return true;
+  }
 };
