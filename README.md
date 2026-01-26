@@ -31,3 +31,5 @@ The app features a **Traffic Controller** logic in the frontend that allows for 
 - [ ] **Input Sanitization**: Implement Pydantic-based strict validation and Bleach for XSS prevention.
 - [ ] **Rate Limiting**: Protect API endpoints from brute force and DoS.
 - [ ] **CORS Policy**: Restrict cross-origin requests to trusted domains only.
+
+PS: This project also involves heavy use of GPTs mainly for the frontEnd NEXT.js code. The intent is to learn how to use them effectively.
