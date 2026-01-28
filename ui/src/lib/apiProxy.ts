@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_URL = process.env.BACKEND_URL || 'http://backend:8000';
+// Production: Use Railway URL
+// Development: Use local backend
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
 
 export type ProxyRequestOptions = {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
@@ -27,7 +29,7 @@ export const authMiddleware: Middleware = async (context: MiddlewareContext) => 
 };
 
 /**
- * Request ID middleware for tracing (future enhancement)
+ * Request ID middleware for tracing
  */
 export const requestIdMiddleware: Middleware = async (context: MiddlewareContext) => {
   const requestId = context.request.headers.get('x-request-id') || 
@@ -73,6 +75,8 @@ export async function proxyRequest(
     await applyMiddlewares(nextRequest, headers, middlewares);
 
     const url = `${BACKEND_URL}${path}`;
+    
+    console.log(`[API Proxy] ${options.method} ${url}`);
 
     const fetchOptions: RequestInit = {
       method: options.method,
@@ -84,10 +88,22 @@ export async function proxyRequest(
     }
 
     const response = await fetch(url, fetchOptions);
-    const data = await response.json();
+    
+    // Handle empty responses (like DELETE)
+    const contentType = response.headers.get('content-type');
+    let data;
+    
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      // For non-JSON responses or empty responses
+      const text = await response.text();
+      data = text ? { message: text } : { message: 'Success' };
+    }
 
     // Map backend status codes to appropriate responses
     if (!response.ok) {
+      console.error(`[API Proxy] Error: ${response.status}`, data);
       return NextResponse.json(
         {
           error: data.error || data.message || 'Backend request failed',
@@ -99,7 +115,20 @@ export async function proxyRequest(
 
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
-    console.error(`Proxy request failed for ${path}:`, error);
+    console.error(`[API Proxy] Failed for ${path}:`, error);
+    
+    // Provide more helpful error messages
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      return NextResponse.json(
+        {
+          error: 'Unable to connect to backend API',
+          details: 'The API service may be unavailable. Please try again later.',
+          backend: BACKEND_URL,
+        },
+        { status: 503 }
+      );
+    }
+    
     return NextResponse.json(
       {
         error: 'Failed to communicate with backend',
