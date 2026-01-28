@@ -2,14 +2,15 @@ import { useState, useEffect } from 'react';
 import { localStorageService } from '@/services/localStorageService';
 import { apiService } from '@/services/apiService';
 import { TaskStatus } from '@/components/atoms/StatusBadge';
-import { DateTimeInput } from '@/components/atoms/DateTimeInput';
+// import { TaskItem } from '@/components/molecules/TaskItem';
+// import { DateTimeInput } from '@/components/atoms/DateTimeInput';
 
 export function useTasks() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // Future toggle: this will be driven by your Auth Service
-  const isLoggedIn = false; 
+  // Future toggle: this will be driven by the Auth Service
+  const isLoggedIn = true; 
 
   const activeService = isLoggedIn ? apiService : localStorageService;
 
@@ -36,13 +37,13 @@ export function useTasks() {
     setTasks(prev => prev.filter(t => t.id !== id));
   };
 
-  const updateTaskStatus = async (id: string | number, newStatus: TaskStatus) => {
+  const updateTaskStatus = async (id: string | number, updatedTask: any) => {
     try {
       // Optimistic Update: change UI immediately
-      setTasks(prev => prev.map(t => t.id === id ? { ...t, status: newStatus } : t));
+      setTasks(prev => prev.map(t => t.id === id ? { ...t, status: updatedTask.status } : t));
       
       // Persist change
-      await activeService.updateTask(id, { status: newStatus });
+      await activeService.updateTask(id, updatedTask);
     } catch (err) {
       console.error("Failed to update status", err);
       // Fallback: reload data if persistence fails
@@ -58,9 +59,10 @@ export function useTasks() {
 
     const currentIndex = STATUS_ORDER.indexOf(task.status);
     const nextIndex = direction === 'forward' ? currentIndex + 1 : currentIndex - 1;
+    task.status = STATUS_ORDER[nextIndex];
 
     if (nextIndex >= 0 && nextIndex < STATUS_ORDER.length) {
-      await updateTaskStatus(id, STATUS_ORDER[nextIndex]);
+      await updateTaskStatus(id, task);
     }
   };
 

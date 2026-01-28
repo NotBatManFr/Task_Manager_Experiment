@@ -14,8 +14,7 @@ export const TaskItem = ({ task, onMove, onDelete }: any) => {
   return (
     <motion.div
       layout
-      className="relative flex bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden group min-h-[110px]"
-    >
+      className="relative flex bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden group min-h-[110px]">
       {/* LEFT: Move Backward */}
       {prevStatus && (
         <VerticalNavButton
