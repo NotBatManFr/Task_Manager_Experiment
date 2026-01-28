@@ -12,6 +12,7 @@ from sqlalchemy.exc import OperationalError
 
 # DEFAULT_DB_URL = 'postgresql+psycopg://user:password@db:5432/task_db'
 SQL_ALCHEMY_DB_URL = os.getenv('DATABASE_URL')
+SQL_ALCHEMY_DB_URL = SQL_ALCHEMY_DB_URL.replace("postgres://", "postgresql+psycopg://")
 
 engine = None
 for i in range(5):
