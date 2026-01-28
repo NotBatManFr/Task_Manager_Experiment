@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(title="Task Management API", version="1.0.0")
 
 UI_ORIGINS = os.getenv("UI_ORIGINS", "")
 
@@ -23,6 +23,28 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for monitoring"""
+    return {
+        "status": "healthy",
+        "service": "task-api",
+        "version": "1.0.0"
+    }
+
+@app.get("/")
+async def root():
+    """API root endpoint"""
+    return {
+        "message": "Task Management API",
+        "version": "1.0.0",
+        "endpoints": {
+            "health": "/health",
+            "tasks": "/tasks",
+            "docs": "/docs"
+        }
+    }
 
 @app.post("/tasks")#, response_model=TaskResponse)
 def create_task(task_data: TaskCreate, db: Session = Depends(get_db)):
@@ -46,3 +68,4 @@ def update_task(task_id: str, task_data: TaskCreate, db: Session = Depends(get_d
 def delete_task(task_id: str, db: Session = Depends(get_db)):
     repo = TaskRepository(db)
     repo.remove(task_id)
+    return {"message": "Task deleted successfully"}
