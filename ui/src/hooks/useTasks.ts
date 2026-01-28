@@ -32,7 +32,8 @@ export function useTasks() {
     setTasks(prev => [...prev, savedTask]);
   };
 
-  const deleteTask = async (id: string | number) => {
+  //  | number
+  const deleteTask = async (id: string) => {
     await activeService.deleteTask(id);
     setTasks(prev => prev.filter(t => t.id !== id));
   };
