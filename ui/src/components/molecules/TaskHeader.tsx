@@ -5,11 +5,11 @@ export const TaskHeader = ({ title, phrase, count }: { title: string; phrase: st
     
     <div className="relative flex items-center justify-between">
       <div className="space-y-1">
-        <h1 className="text-4xl font-black tracking-tight text-cyan-400">
+        <h1 className="text-4xl font-black tracking-tight text-blue-400">
           {title}
         </h1>
         <div className="flex items-center gap-2">
-          <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
+          <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse" />
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">
             {phrase}
           </p>
@@ -18,14 +18,14 @@ export const TaskHeader = ({ title, phrase, count }: { title: string; phrase: st
 
       <div className="flex flex-col items-end">
         <div className="flex items-baseline gap-1">
-          <span className="text-4xl font-black text-cyan-400 tabular-nums">
+          <span className="text-4xl font-black text-blue-400 tabular-nums">
             {count}
           </span>
           <span className="text-sm font-bold text-slate-300">Tasks</span>
         </div>
         <div className="mt-1 h-1 w-12 rounded-full bg-slate-100 overflow-hidden">
           <div 
-            className="h-full bg-cyan-400 transition-all duration-500" 
+            className="h-full bg-blue-400 transition-all duration-500" 
             style={{ width: `${Math.min(count * 10, 100)}%` }} 
           />
         </div>

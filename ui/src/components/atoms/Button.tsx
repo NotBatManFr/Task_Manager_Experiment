@@ -7,7 +7,7 @@ interface ButtonProps {
 
 export const Button = ({ onClick, children, variant = 'primary', className = '' }: ButtonProps) => {
   const styles = {
-    primary: 'bg-cyan-400 hover:bg-emerald-400 text-white',
+    primary: 'bg-blue-400 hover:bg-emerald-400 text-white',
     danger: 'bg-red-500 hover:bg-red-600 text-white',
     secondary: 'bg-gray-200 hover:bg-gray-300 text-gray-800'
   };
