@@ -145,6 +145,8 @@ Full API documentation available at `/docs` when running the backend.
 
 # Phase 1: Microservices-Ready Transition (Next)
 - [ ] **Service Split**: Decouple modules into a standalone internal service.
+
+- 📘 Detailed plan: `docs/fastapi-microservice-split-plan.md`
 #### NOTE: This application has no practical purpose other than learning the transition from badly deisgned system (intentional) to a structured application design. Since these will be migrated to microservices, the first restructuring will be based on functionlity(service) of modules. Other Phases may or may not take place depending on how this one goes.
 
 # Phase 2: Authentication & Identity
