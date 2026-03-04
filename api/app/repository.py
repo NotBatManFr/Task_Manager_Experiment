@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 from app.models import Task
-# import uuid
 
 class TaskRepository:
 
@@ -49,7 +48,7 @@ class TaskRepository:
         Delete an existing Task instance from the database
 
         Returns True if the delete and commit succeeded, False otherwise
-        
+
         The caller is responsible for ensuring the task exists before
         calling this method
         """
