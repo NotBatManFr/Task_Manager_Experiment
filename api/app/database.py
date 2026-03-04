@@ -1,87 +1,87 @@
+"""Database setup and session management.
+
+Supports:
+- explicit `DATABASE_URL` configuration,
+- fallback Postgres URL from legacy env vars,
+- local SQLite fallback for development/tests when credentials are absent.
+"""
+
 import os
 import time
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
-from sqlalchemy.exc import OperationalError
-from sqlalchemy import create_engine
+
 from dotenv import load_dotenv
+from sqlalchemy import create_engine
+from sqlalchemy.exc import OperationalError
+from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy.pool import QueuePool
 
-# Load environment variables from .env
 load_dotenv()
 
-# Fetch variables
-USER = os.getenv("user")
-PASSWORD = os.getenv("password")
-HOST = os.getenv("host")
-PORT = os.getenv("port")
-DBNAME = os.getenv("dbname")
 
-DATABASE_URL = f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DBNAME}?sslmode=require"
+def _build_database_url() -> str:
+    """Resolve database URL from environment with sensible fallbacks."""
+    explicit_database_url = os.getenv("DATABASE_URL")
+    if explicit_database_url:
+        return explicit_database_url
 
-engine = create_engine(DATABASE_URL)
+    user = os.getenv("user")
+    password = os.getenv("password")
+    host = os.getenv("host")
+    port = os.getenv("port")
+    dbname = os.getenv("dbname")
 
-engine = None
-max_retries = 5
-retry_delay = 2
+    if all([user, password, host, port, dbname]):
+        return f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{dbname}?sslmode=require"
 
-for attempt in range(max_retries):
-    try:
-        engine = create_engine(
-            DATABASE_URL,
-            poolclass=QueuePool,
-            pool_size=5,  # Number of connections to maintain
-            max_overflow=10,  # Max connections beyond pool_size
-            pool_pre_ping=True,  # Verify connections before using
-            pool_recycle=3600,  # Recycle connections after 1 hour
-            echo=False,  # Set to True for SQL query logging in development
-        )
-        
-        # Test the connection
-        with engine.connect() as conn:
-            print("✓ Database connection established successfully")
-            break
-            
-    except OperationalError as e:
-        if attempt < max_retries - 1:
-            print(f"⚠ Database not ready yet, retrying in {retry_delay}s (Attempt {attempt + 1}/{max_retries})")
-            time.sleep(retry_delay)
-        else:
-            print(f"✗ Failed to connect to database after {max_retries} attempts")
+    return "sqlite:///./task_manager.db"
+
+
+DATABASE_URL = _build_database_url()
+
+
+def _init_engine(database_url: str):
+    """Initialize SQLAlchemy engine with retries for non-SQLite databases."""
+    if database_url.startswith("sqlite"):
+        return create_engine(database_url, connect_args={"check_same_thread": False})
+
+    max_retries = 5
+    retry_delay = 2
+
+    for attempt in range(max_retries):
+        try:
+            engine = create_engine(
+                database_url,
+                poolclass=QueuePool,
+                pool_size=5,
+                max_overflow=10,
+                pool_pre_ping=True,
+                pool_recycle=3600,
+                echo=False,
+            )
+            with engine.connect():
+                print("✓ Database connection established successfully")
+            return engine
+        except OperationalError as error:
+            if attempt < max_retries - 1:
+                print(f"⚠ Database not ready yet, retrying in {retry_delay}s (Attempt {attempt + 1}/{max_retries})")
+                time.sleep(retry_delay)
+                continue
+
             raise Exception(
                 "Could not connect to the database. "
                 "Please check your DATABASE_URL and ensure the database is accessible."
-            ) from e
+            ) from error
 
-if not engine:
     raise Exception("Database engine initialization failed")
 
 
-# for i in range(5):
-#     try:
-#         engine = create_engine(DATABASE_URL)
-#         # Attempting a dummy connecion to verify if DB is listening
-#         with engine.connect() as conn:
-#             break
-#     except OperationalError:
-#         print(f"Database not ready yet.... retrying in 20 seconds (Attempt {i+1}/5)")
-#         time.sleep(20)
-
-# if not engine:
-#     raise Exception("Could not connect to the database. Please check the database instance for any faults.")
-
-# # Test the connection
-# try:
-#     with engine.connect() as connection:
-#         print("Connection successful!")
-# except Exception as e:
-#     print(f"Failed to connect: {e}")
-
+engine = _init_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
 Base = declarative_base()
 
+
 def get_db():
+    """Yield a database session for request scope and close it afterward."""
     db = SessionLocal()
     try:
         yield db
