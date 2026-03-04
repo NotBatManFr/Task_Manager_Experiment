@@ -148,7 +148,7 @@ Full API documentation available at `/docs` when running the backend.
 
 - [ ] **User-Task Mapping**: Transition Postgres schema to support `user_id` foreign keys.
 
-- [ ] **MongoDB**: Adding MongoDB in the mix. Additional services will be created.
+- [ ] **MongoDB**: Adding MongoDB in the mix for learning purposes. Additional services will be created. Either be limited to storing telemetry (auditing) or the core collections/tables.
 
 
 PS: This project also involves heavy use of Generative LLMs mainly for the frontEnd NEXT.js code. The intent is to learn how to use them effectively.
