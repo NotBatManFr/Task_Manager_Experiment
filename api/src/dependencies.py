@@ -12,8 +12,8 @@ def get_db(request: Request) -> Session:
     """
     Yield a SQLAlchemy Session for the duration of a single request.
     """
-    SessionLocal = request.app.state.SessionLocal
-    db: Session = SessionLocal()
+    session_local = request.app.state.session_local
+    db: Session = session_local()
     try:
         yield db
     finally:
