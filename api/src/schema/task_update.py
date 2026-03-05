@@ -2,7 +2,7 @@
 Pydantic models that validate data to be updated in the API.
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, AliasChoices
 
 from datetime import datetime
 from typing import Optional
@@ -19,4 +19,9 @@ class TaskUpdate(BaseModel):
 
     title: str = Field(..., description="task title")
     status: str = Field(..., description="task status")
-    due_date: Optional[datetime] = Field(default=None, description="task due date")
+    due_date: Optional[datetime] = Field(
+        default=None,
+        description="task due date",
+        validation_alias=AliasChoices("due_date", "dueDate"),
+        serialization_alias="dueDate"
+    )

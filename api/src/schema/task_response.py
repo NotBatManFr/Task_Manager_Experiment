@@ -1,7 +1,7 @@
 """
 Pydantic models that validate data to be fetched by the API.
 """
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, AliasChoices
 
 from datetime import datetime
 from typing import Optional
@@ -17,9 +17,14 @@ class TaskResponse (BaseModel):
     - due_date: The due date for the task.
     """
     
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
     id: str = Field(description="task id")
     title: str = Field(description="task title")
     status: str = Field(description="task status")
-    due_date: Optional[datetime] = Field(default=None, description="task due date")
+    due_date: Optional[datetime] = Field(
+        default=None,
+        description="task due date",
+        validation_alias=AliasChoices("due_date", "dueDate"),
+        serialization_alias="dueDate"
+    )
