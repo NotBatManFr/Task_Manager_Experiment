@@ -13,7 +13,7 @@ from src.schema.task_response import TaskResponse
 router: APIRouter = APIRouter(prefix="/tasks", tags=["Tasks"])
 
 @router.get(
-    "/", 
+    "", 
     response_model=list[TaskResponse], 
     status_code=status.HTTP_200_OK, 
     summary="Retrieve all tasks")
@@ -23,8 +23,19 @@ def get_tasks(service: TaskServices = Depends(get_task_service)) -> list[TaskRes
     """
     return service.get_all_tasks()
 
+@router.get(
+    "/{task_id}",
+    response_model=TaskResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Retrieve a task by ID")
+def get_task(task_id: str, service: TaskServices = Depends(get_task_service)) -> TaskResponse:
+    """
+    Retrieve a single task by ID.
+    """
+    return service.get_task_by_id(task_id)
+
 @router.post(
-    "/", 
+    "", 
     response_model=TaskResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Create a new task")
