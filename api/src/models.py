@@ -1,4 +1,7 @@
-from sqlalchemy import Column, String, DateTime
+from datetime import datetime
+
+from sqlalchemy import String, DateTime
+from sqlalchemy.orm import Mapped, mapped_column
 from src.infrastructure.database import Base
 
 class Task(Base):
@@ -15,7 +18,7 @@ class Task(Base):
     """
     __tablename__ = "tasks"
 
-    id = Column(String, primary_key=True, index=True)
-    title = Column(String, nullable=False)
-    status = Column(String, default="todo")
-    due_date = Column(DateTime, nullable=True)
+    id: Mapped[str] = mapped_column(String, primary_key=True, index=True)
+    title: Mapped[str] = mapped_column(String, nullable=False)
+    status: Mapped[str] = mapped_column(String, default="todo")
+    due_date: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
