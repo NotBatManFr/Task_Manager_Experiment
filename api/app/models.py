@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, DateTime
-from app.database import Base
+from api.app.infrastructure.database import Base
 
 class Task(Base):
     """
