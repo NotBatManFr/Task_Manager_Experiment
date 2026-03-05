@@ -7,8 +7,12 @@ if any required variable is missing or malformed — rather than at the point
 of first use
 """
 
+from pathlib import Path
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+_ENV_FILE = Path(__file__).parent.parent / ".env"
 
 class Settings(BaseSettings):
     """
@@ -20,7 +24,7 @@ class Settings(BaseSettings):
     """
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=_ENV_FILE,
         env_file_encoding="utf-8",
         populate_by_name=True
     )
@@ -30,7 +34,7 @@ class Settings(BaseSettings):
     db_user: str = Field(description="PostgreSQL Username")
     db_password: str = Field(description="PostgreSQL Password")
     db_host: str = Field(description="Database Host")
-    db_port: str = Field(default=5432, description="Port Number")
+    db_port: int = Field(default=5432, description="Port Number")
     db_name: str = Field(description="Database Name")
 
     #----CORS---------------
@@ -50,4 +54,4 @@ class Settings(BaseSettings):
             f"@{self.db_host}:{self.db_port}/{self.db_name}?sslmode=require"
         )
 
-settings = Settings()
+settings = Settings() # type: ignore[call-arg]
