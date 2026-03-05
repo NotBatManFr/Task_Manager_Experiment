@@ -57,7 +57,7 @@ def build_engine(database_url: str) -> Engine:
     )
 
 
-def init_db(database_url: str):
+def init_db(database_url: str) -> tuple[Engine, sessionmaker]:
     """
     Initialise the database engine with a startup retry loop
 
