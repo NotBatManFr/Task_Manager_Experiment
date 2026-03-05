@@ -1,89 +1,105 @@
-import os
+"""
+Create a SQLAlchemy engine and session factory
+
+Exports
+-------
+- Base          : SQLAlchemy declarative base (imported by models.py)
+- init_db()     : Called once at startup; returns (engine, SessionLocal)
+"""
+
+import logging
 import time
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+
+from sqlalchemy import create_engine, text, Engine
+from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from sqlalchemy.exc import OperationalError
-from sqlalchemy import create_engine
-from dotenv import load_dotenv
 from sqlalchemy.pool import QueuePool
 
-# Load environment variables from .env
-load_dotenv()
 
-# Fetch variables
-USER = os.getenv("user")
-PASSWORD = os.getenv("password")
-HOST = os.getenv("host")
-PORT = os.getenv("port")
-DBNAME = os.getenv("dbname")
+logger = logging.getLogger(__name__)
 
-DATABASE_URL = f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DBNAME}?sslmode=require"
+# Maximum number of connection attempts
+_MAX_RETRIES = 5
+# Delay between retries in seconds
+_RETRY_DELAY = 2
 
-engine = create_engine(DATABASE_URL)
+class Base(DeclarativeBase):
+    """
+    Declarative base class shared by all ORM models
+    """
+    pass
 
-engine = None
-max_retries = 5
-retry_delay = 2
+def build_engine(database_url: str) -> Engine:
+    """    
+    Create a SQLAlchemy engine with connection pooling configured for a
+    long-running web service
 
-for attempt in range(max_retries):
-    try:
-        engine = create_engine(
-            DATABASE_URL,
-            poolclass=QueuePool,
-            pool_size=5,  # Number of connections to maintain
-            max_overflow=10,  # Max connections beyond pool_size
-            pool_pre_ping=True,  # Verify connections before using
-            pool_recycle=3600,  # Recycle connections after 1 hour
-            echo=False,  # Set to True for SQL query logging in development
-        )
-        
-        # Test the connection
-        with engine.connect() as conn:
-            print("✓ Database connection established successfully")
-            break
+    Pool settings
+    -------------
+    pool_size       : Persistent connections kept open. Set to 5 for a small
+                      service; tune upward under load.
+    max_overflow    : Temporary connections allowed beyond pool_size.
+    pool_pre_ping   : Issue a lightweight SELECT 1 before handing out a
+                      connection — catches stale connections after DB restarts.
+    pool_recycle    : Force-recycle connections older than 1 hour to prevent
+                      "server closed the connection unexpectedly" errors on
+                      long-idle instances.
+    """
+
+    return create_engine(
+        database_url,
+        poolclass=QueuePool,
+        pool_size=5,  # Number of connections to maintain
+        max_overflow=10,  # Max connections beyond pool_size
+        pool_pre_ping=True,  # Verify connections before using
+        pool_recycle=3600,  # Recycle connections after 1 hour
+        echo=False,  # Set to True for SQL query logging in development
+    )
+
+
+def init_db(database_url: str):
+    """
+    Initialise the database engine with a startup retry loop
+
+    Parameters
+    ----------
+    database_url : str
+        Full SQLAlchemy connection string
+
+    Returns
+    -------
+    tuple[Engine, sessionmaker]
+        A configured engine and a bound session factory
+
+    Raises
+    ------
+    RuntimeError
+        If the database cannot be reached after _MAX_RETRIES attempts
+    """
+    for attempt in range(_MAX_RETRIES):
+        try:
+            engine = build_engine(database_url)
             
-    except OperationalError as e:
-        if attempt < max_retries - 1:
-            print(f"⚠ Database not ready yet, retrying in {retry_delay}s (Attempt {attempt + 1}/{max_retries})")
-            time.sleep(retry_delay)
-        else:
-            print(f"✗ Failed to connect to database after {max_retries} attempts")
-            raise Exception(
-                "Could not connect to the database. "
-                "Please check your DATABASE_URL and ensure the database is accessible."
-            ) from e
+            with engine.connect() as connection:
+                connection.execute(text("SELECT 1"))
 
-if not engine:
-    raise Exception("Database engine initialization failed")
+            logger.info("Database connection established successfully")
 
+            session_local = sessionmaker(autocommit=False, 
+                                         autoflush=False, 
+                                         bind=engine)
+            return engine, session_local
+        
+        except OperationalError as exception:
+            if attempt < _MAX_RETRIES - 1:
+                logger.warning(
+                    f"Database connection failed, retrying in {_RETRY_DELAY} seconds..."
+                    f"\n(attempt {attempt + 1}/{_MAX_RETRIES})"
+                    f"\n: {exception}")
+                time.sleep(_RETRY_DELAY)
 
-# for i in range(5):
-#     try:
-#         engine = create_engine(DATABASE_URL)
-#         # Attempting a dummy connecion to verify if DB is listening
-#         with engine.connect() as conn:
-#             break
-#     except OperationalError:
-#         print(f"Database not ready yet.... retrying in 20 seconds (Attempt {i+1}/5)")
-#         time.sleep(20)
-
-# if not engine:
-#     raise Exception("Could not connect to the database. Please check the database instance for any faults.")
-
-# # Test the connection
-# try:
-#     with engine.connect() as connection:
-#         print("Connection successful!")
-# except Exception as e:
-#     print(f"Failed to connect: {e}")
-
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-Base = declarative_base()
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+            else: 
+                raise RuntimeError(
+                    f"Database connection failed after {_MAX_RETRIES} attempts: {exception}"
+                    "\nPlease check your database configuration and ensure the database is running."
+                    ) from exception
