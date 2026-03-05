@@ -4,11 +4,11 @@ Business logic layer for Task operations
 
 import uuid
 
-from api.app.exceptions.exceptions import TaskNotFoundException, TaskDeleteError
-from app.models import Task
-from api.app.repositories.repository import TaskRepository
-from app.schema.task_create import TaskCreate
-from app.schema.task_update import TaskUpdate
+from api.src.exceptions.exceptions import TaskNotFoundException, TaskDeleteError
+from src.models import Task
+from src.repositories.repository import TaskRepository
+from src.schema.task_create import TaskCreate
+from src.schema.task_update import TaskUpdate
 
 class TaskServices:
     """

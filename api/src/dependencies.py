@@ -5,8 +5,8 @@ Centralised FastAPI dependency injection callables
 from fastapi import Depends, Request
 from sqlalchemy.orm import Session
 
-from app.repositories.repository import TaskRepository
-from app.services.task_service import TaskServices
+from src.repositories.repository import TaskRepository
+from src.services.task_service import TaskServices
 
 def get_db(request: Request) -> Session:
     """

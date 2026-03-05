@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 
-from app.infrastructure.lifecycle import lifespan
-from app.routers import tasks as tasks_router, system as system_router
-from app.exceptions.exception_handlers import register_exception_handlers
+from src.infrastructure.lifecycle import lifespan
+from src.routers import tasks as tasks_router, system as system_router
+from src.exceptions.exception_handlers import register_exception_handlers
 from middleware.cors import register_cors_middleware
 
 app: FastAPI = FastAPI(

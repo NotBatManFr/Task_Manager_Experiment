@@ -5,7 +5,7 @@ Translates domain exceptions into HTTP responses
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
-from app.exceptions.exceptions import TaskNotFoundException, TaskDeleteError
+from src.exceptions.exceptions import TaskNotFoundException, TaskDeleteError
 
 def register_exception_handlers(app: FastAPI) -> None:
     """

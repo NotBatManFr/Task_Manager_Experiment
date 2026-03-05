@@ -4,11 +4,11 @@ HTTP route definitions for the /tasks resource
 
 from fastapi import APIRouter, Depends, status, HTTPException
 
-from app.dependencies import get_task_service
-from app.services.task_service import TaskServices
-from app.schema.task_create import TaskCreate
-from app.schema.task_update import TaskUpdate
-from app.schema.task_response import TaskResponse
+from src.dependencies import get_task_service
+from src.services.task_service import TaskServices
+from src.schema.task_create import TaskCreate
+from src.schema.task_update import TaskUpdate
+from src.schema.task_response import TaskResponse
 
 router: APIRouter = APIRouter(prefix="/tasks", tags=["Tasks"])
 
