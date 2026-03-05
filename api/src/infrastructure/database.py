@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 # Maximum number of connection attempts
 _MAX_RETRIES = 5
 # Delay between retries in seconds
-_RETRY_DELAY = 2
+_RETRY_DELAY = 10
 
 class Base(DeclarativeBase):
     """
@@ -52,12 +52,12 @@ def build_engine(database_url: str) -> Engine:
         pool_size=5,
         max_overflow=10,
         pool_pre_ping=True,
-        pool_recycle=3600,
+        # pool_recycle=3600,
         echo=False
     )
 
 
-def init_db(database_url: str) -> tuple[Engine, sessionmaker] | None:
+def init_db(database_url: str) -> tuple[Engine, sessionmaker[Session]]: # type: ignore[arg-type]
     """
     Initialise the database engine with a startup retry loop
 
@@ -68,7 +68,7 @@ def init_db(database_url: str) -> tuple[Engine, sessionmaker] | None:
 
     Returns
     -------
-    tuple[Engine, sessionmaker]
+    tuple[Engine, sessionmaker[Session]]
         A configured engine and a bound session factory
 
     Raises
@@ -103,3 +103,5 @@ def init_db(database_url: str) -> tuple[Engine, sessionmaker] | None:
                     f"Database connection failed after {_MAX_RETRIES} attempts: {exception}"
                     "\nPlease check your database configuration and ensure the database is running."
                     ) from exception
+
+    
