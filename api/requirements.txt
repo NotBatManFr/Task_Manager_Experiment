@@ -8,7 +8,6 @@ SQLAlchemy==2.0.45
 # Input Validation
 pydantic==2.12.5
 pydantic_core==2.41.5
-pydantic-settings==2.9.1
 
 # Testing
 pytest==9.0.2
@@ -20,4 +19,4 @@ psycopg2-binary==2.9.11
 # psycopg2[binary]==3.3.2
 
 # load .env variables
-# python-dotenv==1.2.1
+python-dotenv==1.2.1
