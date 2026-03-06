@@ -2,3 +2,4 @@
 ./tests/
 ./venv/
 /app/__pycache__/
+venv

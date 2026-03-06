@@ -90,7 +90,11 @@ npm run dev
 ### Environment Variables
 
 **Backend (Railway):**
-- `DATABASE_URL` - PostgreSQL connection string from Supabase (may defer based on the type of connection you choose)
+- `DB_USER` - PostgreSQL username
+- `DB_PASSWORD` - PostgreSQL password
+- `DB_HOST` - PostgreSQL host
+- `DB_PORT` - PostgreSQL port (default: `5432`)
+- `DB_NAME` - PostgreSQL database name
 - `UI_ORIGINS` - Comma-separated list of allowed origins for CORS
 
 **Frontend (Vercel):**
@@ -98,8 +102,8 @@ npm run dev
 
 ### Quick Deploy Steps
 
-1. **Setup Supabase** → Get DATABASE_URL
-2. **Deploy to Railway** → Set DATABASE_URL and UI_ORIGINS
+1. **Setup Supabase** → Collect DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME
+2. **Deploy to Railway** → Set the DB_* vars and UI_ORIGINS
 3. **Deploy to Vercel** → Set BACKEND_URL to Railway URL
 4. **Update CORS** → Add Vercel URL to Railway's UI_ORIGINS
 
@@ -109,6 +113,7 @@ npm run dev
 |--------|----------|-------------|
 | GET | `/health` | Health check |
 | GET | `/tasks` | List all tasks |
+| GET | `/tasks/{id}` | Retrieve one task |
 | POST | `/tasks` | Create a task |
 | PUT | `/tasks/{id}` | Update a task |
 | DELETE | `/tasks/{id}` | Delete a task |
