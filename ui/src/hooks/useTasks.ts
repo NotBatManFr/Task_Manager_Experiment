@@ -10,7 +10,7 @@ export function useTasks() {
   const [loading, setLoading] = useState(true);
   
   // Future toggle: this will be driven by the Auth Service
-  const isLoggedIn = true; 
+  const isLoggedIn = false; 
 
   const activeService = isLoggedIn ? apiService : localStorageService;
 

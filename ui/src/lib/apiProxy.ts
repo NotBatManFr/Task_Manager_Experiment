@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Production: Use Railway URL
-// Development: Use local backend
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
+const BACKEND_URL = process.env.BACKEND_URL;
+
+if (!BACKEND_URL) {
+  throw new Error('Missing required environment variable: BACKEND_URL');
+}
 
 export type ProxyRequestOptions = {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
