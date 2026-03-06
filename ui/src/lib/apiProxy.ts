@@ -88,20 +88,21 @@ export async function proxyRequest(
     }
 
     const response = await fetch(url, fetchOptions);
+
+    if (response.status === 204) {
+      return new NextResponse(null, { status: 204 });
+    }
     
-    // Handle empty responses (like DELETE)
     const contentType = response.headers.get('content-type');
     let data;
     
     if (contentType && contentType.includes('application/json')) {
       data = await response.json();
     } else {
-      // For non-JSON responses or empty responses
       const text = await response.text();
       data = text ? { message: text } : { message: 'Success' };
     }
 
-    // Map backend status codes to appropriate responses
     if (!response.ok) {
       console.error(`[API Proxy] Error: ${response.status}`, data);
       return NextResponse.json(
@@ -117,7 +118,6 @@ export async function proxyRequest(
   } catch (error) {
     console.error(`[API Proxy] Failed for ${path}:`, error);
     
-    // Provide more helpful error messages
     if (error instanceof TypeError && error.message.includes('fetch')) {
       return NextResponse.json(
         {

@@ -103,5 +103,8 @@ def init_db(database_url: str) -> tuple[Engine, sessionmaker[Session]]: # type: 
                     f"Database connection failed after {_MAX_RETRIES} attempts: {exception}"
                     "\nPlease check your database configuration and ensure the database is running."
                     ) from exception
-
-    
+            
+        except Exception as exception:
+            raise RuntimeError(
+                f"Unexpected error during database initialization: {exception}"
+            ) from exception
