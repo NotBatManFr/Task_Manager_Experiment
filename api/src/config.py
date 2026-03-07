@@ -20,7 +20,7 @@ def _env(key: str, default: str = "", *, required: bool = False) -> str:
     """
     Read and trim an environment variable.
     """
-    value = (os.getenv(key) or default).strip()
+    value = (os.environ.get(key) or default).strip()
     if required and value == "":
         raise ValueError(f"Missing required environment variable: {key}")
     return value
@@ -67,13 +67,11 @@ class Settings:
             except ValueError as exc:
                 raise ValueError(f"DB_PORT must be an integer, got {db_port_value!r}") from exc
 
-            # Encode credentials in case they include special URL characters.
             encoded_user = quote_plus(self.db_user)
             encoded_password = quote_plus(self.db_password)
 
             self.db_url = (
-                f"postgresql+psycopg2://{encoded_user}:{encoded_password}"
-                f"@{self.db_host}:{self.db_port}/{self.db_name}?sslmode={db_sslmode}"
+                f"postgresql+psycopg2://{encoded_user}:{encoded_password}@{self.db_host}:{self.db_port}/{self.db_name}?sslmode={db_sslmode}"
             )
 
         self.ui_origins = _env("UI_ORIGINS")
