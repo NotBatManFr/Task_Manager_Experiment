@@ -6,6 +6,12 @@ if (!BACKEND_URL) {
   throw new Error('Missing required environment variable: BACKEND_URL');
 }
 
+function joinBackendUrl(baseUrl: string, path: string): string {
+  const normalizedBase = baseUrl.replace(/\/+$/, '');
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return `${normalizedBase}${normalizedPath}`;
+}
+
 export type ProxyRequestOptions = {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   body?: Record<string, any> | null;
@@ -76,7 +82,7 @@ export async function proxyRequest(
     // Apply all middlewares (auth, logging, etc.)
     await applyMiddlewares(nextRequest, headers, middlewares);
 
-    const url = `${BACKEND_URL}${path}`;
+    const url = joinBackendUrl(BACKEND_URL, path);
     
     console.log(`[API Proxy] ${options.method} ${url}`);
 
