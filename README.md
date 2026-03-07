@@ -7,26 +7,23 @@ A full-stack task management application with a Next.js frontend, FastAPI backen
 
 ## 🚀 Production Stack
 
-- **Frontend**: Next.js 16
+- **Frontend**: Next.js 16 (can replace the backend using Prisma as the ORM)
 - **Backend**: FastAPI + Python 3.13 (not really necessary but aids in learning)
 - **Database**: PostgreSQL
 
 ## 🏗️ Architecture (subject to change based on credit balance)
 
 ```
-┌─────────────┐      ┌──────────────┐      ┌───────────────┐
-│   Vercel    │─────▶│   Railway    │─────▶│   Supabase    │
-│  (Next.js)  │      │   (FastAPI)  │      │ (PostgreSQL)  │
-└─────────────┘      └──────────────┘      └───────────────┘
-     Frontend              Backend              Database
+ Vercel    ->    Render    ->    Supabase
+(NextJS)        (FastAPI)      (PostgreSQL)
 ```
 
 ## 🛠️ Local Development
 
 ### Prerequisites
 - Docker & Docker Compose
-- Node.js 20+
-- Python 3.13+
+- Node.js 21
+- Python 3.12
 
 ### Quick Start
 
@@ -38,52 +35,8 @@ A full-stack task management application with a Next.js frontend, FastAPI backen
 
 2. **Start with Docker Compose**
    ```bash
-   docker-compose up
+   docker compose up
    ```
-
-### Manual Setup (without Docker)
-
-**Backend:**
-```bash
-cd api
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-```
-
-**Frontend:**
-```bash
-cd ../ui
-npm install
-npm run dev
-```
-
-## 📦 Project Structure
-
-```
-.
-├── api/                    # FastAPI backend
-│   ├── app/
-│   │   ├── main.py        # API routes & CORS config
-│   │   ├── database.py    # Database connection
-│   │   ├── models.py      # SQLAlchemy models
-│   │   ├── repository.py  # Data access layer
-│   │   └── schemas.py     # Pydantic schemas
-│   ├── Dockerfile         # Docker config backend container
-│   └── requirements.txt   # Python dependencies
-├── ui/                    # Next.js frontend
-│   ├── src/
-│   │   ├── app/          # Next.js app router
-│   │   ├── components/   # React components
-│   │   ├── hooks/        # Custom React hooks
-│   │   ├── lib/          # Utilities & API proxy
-│   │   ├── types/        # Interfaces (contracts)
-│   │   └── services/     # API & storage services
-│   ├── Dockerfile        # Docker config frontend container
-│   └── package.json      # Node dependencies
-└── docker-compose.yml    # Local containerization setup
-```
 
 ## 🔧 Configuration
 
@@ -93,19 +46,19 @@ npm run dev
 - `DB_USER` - PostgreSQL username
 - `DB_PASSWORD` - PostgreSQL password
 - `DB_HOST` - PostgreSQL host
-- `DB_PORT` - PostgreSQL port (default: `5432`)
+- `DB_PORT` - PostgreSQL port
 - `DB_NAME` - PostgreSQL database name
-- `UI_ORIGINS` - Comma-separated list of allowed origins for CORS
+- `UI_ORIGINS` - Comma-separated list of allowed UI origins for CORS
 
 **Frontend (Vercel):**
-- `BACKEND_URL` - Railway API URL for server-side requests
+- `BACKEND_URL` -  API URL for server-side requests
 
 ### Quick Deploy Steps
 
 1. **Setup Supabase** → Collect DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME
-2. **Deploy to Railway** → Set the DB_* vars and UI_ORIGINS
-3. **Deploy to Vercel** → Set BACKEND_URL to Railway URL
-4. **Update CORS** → Add Vercel URL to Railway's UI_ORIGINS
+2. **Deploy to Render** → Set the DB_* vars and UI_ORIGINS
+3. **Deploy to Vercel** → Set BACKEND_URL to Render URL
+4. **Update CORS** → Add Vercel URL to Render's UI_ORIGINS
 
 ## 🧪 API Endpoints
 
@@ -118,19 +71,7 @@ npm run dev
 | PUT | `/tasks/{id}` | Update a task |
 | DELETE | `/tasks/{id}` | Delete a task |
 
-Full API documentation available at `/docs` when running the backend.
-
-## 🎨 Features
-
-- ✅ Task CRUD operations
-- ✅ Kanban board view (To Do, In Progress, Done)
-- ✅ Due date support
-- ✅ Responsive design with Tailwind CSS
-- ✅ Smooth animations with Framer Motion
-- ✅ Production-ready with proper error handling
-- ✅ CORS configured for cross-origin requests
-- ✅ Health checks and monitoring
-- ✅ Connection pooling for database
+Full API documentation available at `/docs` when running the backend locally.
 
 ## 🔒 Security
 
@@ -140,15 +81,9 @@ Full API documentation available at `/docs` when running the backend.
 - Secure database connections with SSL
 - Non-root Docker user
 
-## 📊 Monitoring
-
-- Railway: Built-in logging and metrics
-- Vercel: Analytics and deployment logs
-- Supabase: Database performance monitoring
-
 ## 🗺 Future Roadmap
 
-- [ ] **Service Split**: Decouple modules into a standalone internal service.
+- [x] **Service Split**: Decouple modules into a standalone internal service.
 #### NOTE: This application has no practical purpose other than learning different stacks and transitioning from badly deisgned system (intentional) to a structured application design. 
 - [ ] **User-Task Mapping**: Transition Postgres schema to support `user_id` foreign keys.
 - [ ] **MongoDB**: Adding MongoDB in the mix for learning purposes. Additional services will be created. Either be limited to storing telemetry (auditing) or the core collections/tables.
