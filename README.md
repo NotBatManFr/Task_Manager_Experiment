@@ -1,5 +1,5 @@
 
-<a href="https://task-manager-mritesh.vercel.app/" target="_blank" rel="noopener noreferer">To the App</a>
+<a href="https://task-manager-mritesh.vercel.app/" target="_blank" rel="noopener noreferer">To the App</a> - (might take ~30 secs to load up because of free tier limitations)
 
 # Task Management Application
 
