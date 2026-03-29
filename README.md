@@ -84,7 +84,7 @@ Full API documentation available at `/docs` when running the backend locally.
 ## 🗺 Future Roadmap
 
 - [x] **Service Split**: Decouple modules into a standalone internal service.
-#### NOTE: This application has no practical purpose other than exploring different stacks and transitioning from badly deisgned system (intentional) to a structured application design.
+#### NOTE: This application has no practical purpose other than learning different stacks and transitioning from badly designed system (intentional) to a structured application design. Also, further developments will be done on dedicated repositories cause the componenets are decoupled enough. This repository will be the discarded and the components will be in their own repositories for better management.
 - [ ] **Angular**: Angular FrontEnd for learning purposes.
 - [ ] **SpringBoot**: Write the backend/router in Spring Boot for learning purposes.
 - [ ] **User-Task Mapping**: Transition Postgres schema to support `user_id` foreign keys.
