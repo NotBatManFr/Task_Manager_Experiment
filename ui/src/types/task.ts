@@ -1,6 +1,7 @@
 export type TaskStatus = 'todo' | 'in_progress' | 'done';
 
 export interface TaskCreate {
+  userId: string;
   title: string;
   status?: TaskStatus;
   dueDate?: string | null; // ISO 8601 datetime string
