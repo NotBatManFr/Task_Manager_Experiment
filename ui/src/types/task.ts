@@ -1,7 +1,7 @@
 export type TaskStatus = 'todo' | 'in_progress' | 'done';
 
 export interface TaskCreate {
-  userId?: string;
+  userId?: string; // To-DO: to be mandated once all the components are updated with the user context.
   title: string;
   status?: TaskStatus;
   dueDate?: string | null; // ISO 8601 datetime string
