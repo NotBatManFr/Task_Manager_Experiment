@@ -1,10 +1,17 @@
 import { motion } from "framer-motion";
 import { VerticalNavButton } from "../atoms/VerticalNavButton";
 import { TaskStatus } from "../atoms/StatusBadge";
+import { Task } from "@/types/task";
+
+interface TaskItemProps {
+  task: Task;
+  onMove: (direction: 'forward' | 'backward') => void;
+  onDelete: () => void;
+}
 
 const STATUS_ORDER: TaskStatus[] = ["todo", "in_progress", "done"];
 
-export const TaskItem = ({ task, onMove, onDelete }: any) => {
+export const TaskItem = ({ task, onMove, onDelete }: TaskItemProps) => {
   const currentIndex = STATUS_ORDER.indexOf(task.status);
 
   // Calculate target statuses for the buttons

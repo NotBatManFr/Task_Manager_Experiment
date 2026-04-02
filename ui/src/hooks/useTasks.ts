@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { localStorageService } from '@/services/localStorageService';
 import { apiService } from '@/services/apiService';
 import { TaskStatus } from '@/components/atoms/StatusBadge';
+import { Task, TaskCreate } from '@/types/task';
 // import { TaskItem } from '@/components/molecules/TaskItem';
 // import { DateTimeInput } from '@/components/atoms/DateTimeInput';
 
 export function useTasks() {
-  const [tasks, setTasks] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   
   // Future toggle: this will be driven by the Auth Service
@@ -27,7 +28,7 @@ export function useTasks() {
   };
 
   const addTask = async (title: string, status: TaskStatus = 'todo', dueDate?: string) => {
-    const newTaskTemplate = { title, status, dueDate: dueDate || null };
+    const newTaskTemplate: TaskCreate = { title, status, dueDate: dueDate || null };
     const savedTask = await activeService.saveTask(newTaskTemplate);
     setTasks(prev => [...prev, savedTask]);
   };
@@ -35,13 +36,21 @@ export function useTasks() {
   //  | number
   const deleteTask = async (id: string | number) => {
     await activeService.deleteTask(id);
-    setTasks(prev => prev.filter(t => t.id !== id));
+    setTasks(prev => prev.filter(t => t.id !== String(id)));
   };
 
-  const updateTaskStatus = async (id: string | number, updatedTask: any) => {
+  const updateTaskStatus = async (id: string | number, status: TaskStatus) => {
+    const taskToUpdate = tasks.find(t => t.id === String(id));
+    if (!taskToUpdate) return;
+
+    const updatedTask: Task = {
+      ...taskToUpdate,
+      status,
+    };
+
     try {
       // Optimistic Update: change UI immediately
-      setTasks(prev => prev.map(t => t.id === id ? { ...t, status: updatedTask.status } : t));
+      setTasks(prev => prev.map(t => t.id === String(id) ? { ...t, status } : t));
       
       // Persist change
       await activeService.updateTask(id, updatedTask);
@@ -55,16 +64,15 @@ export function useTasks() {
   const STATUS_ORDER: TaskStatus[] = ['todo', 'in_progress', 'done'];
 
   const moveTask = async (id: string | number, direction: 'forward' | 'backward') => {
-    const task = tasks.find(t => t.id === id);
+    const task = tasks.find(t => t.id === String(id));
     if (!task) return;
 
     const currentIndex = STATUS_ORDER.indexOf(task.status);
     const nextIndex = direction === 'forward' ? currentIndex + 1 : currentIndex - 1;
-    task.status = STATUS_ORDER[nextIndex];
 
-    if (nextIndex >= 0 && nextIndex < STATUS_ORDER.length) {
-      await updateTaskStatus(id, task);
-    }
+    if (nextIndex < 0 || nextIndex >= STATUS_ORDER.length) return;
+
+    await updateTaskStatus(id, STATUS_ORDER[nextIndex]);
   };
 
   useEffect(() => {

@@ -2,9 +2,10 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TaskItem } from '../molecules/TaskItem';
 import { TaskStatus } from '../atoms/StatusBadge';
+import { Task } from '@/types/task';
 
 interface KanbanBoardProps {
-  tasks: any[];
+  tasks: Task[];
   actions: {
     delete: (id: string | number) => void;
     updateStatus: (id: string | number, status: TaskStatus) => void;

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { TaskCreate } from '@/types/task';
 
 const BACKEND_URL: string = process.env.BACKEND_URL ?? (() => {
   throw new Error('Missing required environment variable: BACKEND_URL');
@@ -12,7 +13,7 @@ function joinBackendUrl(baseUrl: string, path: string): string {
 
 export type ProxyRequestOptions = {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-  body?: Record<string, any> | null;
+  body?: TaskCreate | null;
   headers?: Record<string, string>;
 };
 
